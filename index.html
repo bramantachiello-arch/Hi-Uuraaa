@@ -126,25 +126,28 @@ animation:particleAnim .6s ease forwards;
 to{transform:translate(var(--x),var(--y));opacity:0}
 }
 
+/* NOTIFICATION BAR */
 .notification{
 position:fixed;
-top:20px;
-right:20px;
+top:-120px;
+left:50%;
+transform:translateX(-50%);
 background:white;
 color:black;
-padding:15px;
-border-radius:18px;
-width:280px;
-transform:translateX(350px);
-opacity:0;
-transition:.5s ease;
-font-size:9px;
+padding:18px 22px;
+border-radius:20px;
+min-width:300px;
+max-width:420px;
+text-align:center;
+font-size:10px;
 line-height:1.5;
+box-shadow:0 15px 35px rgba(0,0,0,.3);
+transition:.6s cubic-bezier(.2,.8,.2,1);
+z-index:50;
 }
 
 .notification.show{
-transform:translateX(0);
-opacity:1;
+top:40px;
 }
 </style>
 </head>
@@ -169,20 +172,7 @@ opacity:1;
 </div>
 
 <div id="gameBoard"></div>
-<!-- PLAYER GUIDE OVERLAY -->
-<div id="instructionOverlay" class="overlay">
-  <div class="overlay-box">
-    <h1>MODE: ENTER HER WORLD</h1>
-    <p>
-      Klik block merah atau pink agar berubah menjadi biru.<br><br>
-      Semakin cepat klik, semakin besar COMBO.<br><br>
-      Block biru akan beregenerasi setelah 5 detik tidak disentuh.<br><br>
-      Capai 1870 poin untuk membuka pesan spesial ❤️
-    </p>
-    <button class="btn" onclick="startGame()">PLAY</button>
-  </div>
-</div>
-  
+
 </div>
 </div>
 
