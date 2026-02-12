@@ -33,7 +33,8 @@ position:absolute;
 opacity:0;
 pointer-events:none;
 transform:scale(.9);
-transition:all .6s ease;
+transition:all .5s ease;
+text-align:center;
 }
 
 .screen.active{
@@ -42,23 +43,28 @@ pointer-events:auto;
 transform:scale(1);
 }
 
-.menu-box{
+.box{
 background:rgba(0,0,0,.5);
 padding:40px;
 border-radius:20px;
 width:420px;
-text-align:center;
-box-shadow:0 0 30px rgba(255,255,255,.3);
+box-shadow:0 0 25px rgba(255,255,255,.3);
 }
 
-.menu-box h1{
+h1{
 font-size:16px;
-margin-bottom:30px;
+margin-bottom:25px;
+}
+
+p{
+font-size:10px;
+line-height:1.6;
+margin-bottom:20px;
 }
 
 .btn{
-margin:15px;
-padding:15px 20px;
+margin:10px;
+padding:12px 18px;
 border:none;
 background:#ff8fab;
 color:white;
@@ -73,16 +79,11 @@ background:#ff5d8f;
 transform:scale(1.05);
 }
 
-.warning{
-margin-top:20px;
-font-size:10px;
-color:#ffeaf4;
-}
-
 #gameBoard{
 display:grid;
 grid-template-columns:repeat(8,40px);
 gap:6px;
+margin-top:20px;
 }
 
 .block{
@@ -102,6 +103,15 @@ position:absolute;
 top:20px;
 left:20px;
 font-size:12px;
+}
+
+.instruction{
+position:absolute;
+top:50px;
+left:20px;
+font-size:8px;
+width:220px;
+line-height:1.4;
 }
 
 .notification{
@@ -124,73 +134,91 @@ line-height:1.4;
 transform:translateX(0);
 opacity:1;
 }
-
-.combo{
-position:absolute;
-font-size:18px;
-animation:comboPop .8s ease;
-}
-
-@keyframes comboPop{
-0%{transform:scale(.5);opacity:0}
-50%{transform:scale(1.2);opacity:1}
-100%{transform:scale(1);opacity:0}
-}
-
-#ending{
-text-align:center;
-}
-
-#ending h1{
-font-size:20px;
-margin-bottom:20px;
-animation:fadeIn 1.5s ease forwards;
-}
-
-#ending p{
-font-size:10px;
-animation:fadeIn 2.5s ease forwards;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:scale(.8)}
-to{opacity:1;transform:scale(1)}
-}
 </style>
 </head>
 
 <body>
 
+<!-- MAIN MENU -->
 <div id="menu" class="screen active">
-<div class="menu-box">
+<div class="box">
 <h1>VALENTINE PIXEL QUEST</h1>
 <button class="btn" onclick="enterGame()">ENTER HER WORLD</button>
-<button class="btn" onclick="stay()">STAY IN REALITY</button>
-<div id="stayWarning" class="warning"></div>
+<button class="btn" onclick="enterStay()">STAY IN REALITY</button>
 </div>
 </div>
 
+<!-- GAME -->
 <div id="game" class="screen">
-<div class="score">Score: <span id="score">0</span> / 180</div>
-<div id="gameBoard"></div>
+  
+  <div class="game-wrapper">
+
+    <div class="score-panel">
+      <h2>SCORE BOARD</h2>
+      <div class="score-value">
+        <span id="score">0</span> / 180
+      </div>
+    </div>
+
+    <div class="game-area">
+      <div class="instruction">
+        Petunjuk:<br>
+        Klik block warna merah hingga pink<br>
+        untuk mengubahnya menjadi biru.<br>
+        Capai 180 poin untuk membuka pesan spesial ❤️
+      </div>
+      <div id="gameBoard"></div>
+    </div>
+
+  </div>
+
 </div>
 
+<!-- STAY SCREEN -->
+<div id="stay" class="screen">
+<div class="box">
+<h1>STAY IN REALITY</h1>
+<p>
+Reality terasa biasa saja.<br>
+Tidak ada warna merah muda.<br>
+Tidak ada kejutan kecil.<br><br>
+Apakah kamu yakin ingin tetap di sini?
+</p>
+<button class="btn" onclick="backToMenu()">BACK TO MENU</button>
+</div>
+</div>
+
+<!-- ENDING -->
 <div id="ending" class="screen">
+<div class="box">
 <h1>HAPPY VALENTINE ❤️</h1>
-<p>You reached 180 points.<br>Thank you for being my favorite person in this world.</p>
+<p>
+180 poin tercapai.<br><br>
+Terima kasih sudah menjadi<br>
+warna terindah dalam hidupku.
+</p>
+<button class="btn" onclick="backToMenu()">BACK TO MENU</button>
+</div>
 </div>
 
 <div id="notif" class="notification"></div>
 
 <script>
 let score=0;
-let combo=0;
 
 function switchScreen(from,to){
 document.getElementById(from).classList.remove("active");
 setTimeout(()=>{
 document.getElementById(to).classList.add("active");
-},400);
+},300);
+}
+
+function backToMenu(){
+score=0;
+document.getElementById("score").innerText=0;
+switchScreen("game","menu");
+switchScreen("stay","menu");
+switchScreen("ending","menu");
 }
 
 function enterGame(){
@@ -198,13 +226,8 @@ switchScreen("menu","game");
 generateBoard();
 }
 
-function stay(){
-let warn=document.getElementById("stayWarning");
-warn.innerHTML="Reality feels empty without her.<br><button class='btn' onclick='backMenu()'>BACK</button>";
-}
-
-function backMenu(){
-document.getElementById("stayWarning").innerHTML="";
+function enterStay(){
+switchScreen("menu","stay");
 }
 
 function generateBoard(){
@@ -213,42 +236,47 @@ board.innerHTML="";
 for(let i=0;i<64;i++){
 let block=document.createElement("div");
 block.className="block";
-block.style.background=randomColor();
+let color=randomColor();
+block.style.background=color;
+block.dataset.color=color;
 block.onclick=()=>clickBlock(block);
 board.appendChild(block);
 }
 }
 
 function randomColor(){
-const colors=["#ff8fab","#ffc8dd","#bde0fe","#a2d2ff","#cdb4db"];
+const colors=["#ff8fab","#ffc8dd","#ff5d8f","#a2d2ff"];
 return colors[Math.floor(Math.random()*colors.length)];
 }
 
 function clickBlock(block){
-block.style.background=randomColor();
-score+=10;
-combo++;
-document.getElementById("score").innerText=score;
+let current=block.style.backgroundColor;
 
+if(current.includes("255") || block.dataset.color!="#a2d2ff"){
+block.style.background="#a2d2ff";
+block.dataset.color="#a2d2ff";
+score+=10;
+document.getElementById("score").innerText=score;
 checkMilestone();
+}
 
 if(score>=180){
 setTimeout(()=>{
 switchScreen("game","ending");
-},800);
+},600);
 }
 }
 
 function checkMilestone(){
 let text="";
 if(score===50){
-text="You make my world brighter every single day 💖";
+text="Kamu selalu bikin hariku lebih cerah 💖";
 }
 if(score===100){
-text="Halfway there… just like how you complete me 🌸";
+text="Setengah perjalanan… seperti kamu melengkapi aku 🌸";
 }
 if(score===150){
-text="My heart is racing just like this score 💕";
+text="Hampir sampai… hatiku ikut deg-deg-an 💕";
 }
 if(text!==""){
 showNotif(text);
