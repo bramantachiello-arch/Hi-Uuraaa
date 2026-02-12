@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valentine Pixel Quest</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
@@ -33,7 +32,7 @@ position:absolute;
 opacity:0;
 pointer-events:none;
 transform:scale(.9);
-transition:.5s ease;
+transition:.6s ease;
 text-align:center;
 }
 
@@ -51,9 +50,6 @@ width:420px;
 box-shadow:0 0 30px rgba(255,255,255,.25);
 }
 
-h1{font-size:14px;margin-bottom:20px}
-p{font-size:9px;line-height:1.6;margin-bottom:20px}
-
 .btn{
 margin:10px;
 padding:12px 18px;
@@ -65,10 +61,7 @@ border-radius:12px;
 font-size:9px;
 transition:.3s;
 }
-.btn:hover{
-background:#ff5d8f;
-transform:scale(1.05);
-}
+.btn:hover{background:#ff5d8f;transform:scale(1.05)}
 
 .game-wrapper{
 display:flex;
@@ -80,30 +73,25 @@ align-items:flex-start;
 background:rgba(0,0,0,.6);
 padding:20px;
 border-radius:15px;
-width:220px;
+width:230px;
 text-align:center;
-box-shadow:0 0 20px rgba(255,255,255,.2);
 }
 
-.score-panel h2{
-font-size:10px;
-margin-bottom:15px;
+.score-value{font-size:12px;margin-bottom:10px}
+
+.combo-bar{
+height:10px;
+background:#444;
+border-radius:6px;
+overflow:hidden;
+margin-top:10px;
 }
 
-.score-value{
-font-size:12px;
-margin-bottom:15px;
-}
-
-#comboDisplay{
-font-size:9px;
-color:#ffc8dd;
-}
-
-.game-area{
-background:rgba(0,0,0,.4);
-padding:20px;
-border-radius:20px;
+.combo-fill{
+height:100%;
+width:0%;
+background:#ff8fab;
+transition:.3s;
 }
 
 #gameBoard{
@@ -118,33 +106,24 @@ height:45px;
 border-radius:8px;
 cursor:pointer;
 transition:.2s;
-opacity:1;
+position:relative;
 }
 
-.block.fadeIn{
-animation:fadeIn .6s ease;
-}
+.block.fadeIn{animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-@keyframes fadeIn{
-from{opacity:0}
-to{opacity:1}
-}
-
-.overlay{
+.particle{
 position:absolute;
-inset:0;
-background:rgba(0,0,0,.85);
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:10;
+width:6px;
+height:6px;
+background:white;
+border-radius:50%;
+pointer-events:none;
+animation:particleAnim .6s ease forwards;
 }
 
-.overlay-box{
-background:rgba(255,255,255,.1);
-padding:35px;
-border-radius:20px;
-width:420px;
+@keyframes particleAnim{
+to{transform:translate(var(--x),var(--y));opacity:0}
 }
 
 .notification{
@@ -161,7 +140,6 @@ opacity:0;
 transition:.5s ease;
 font-size:9px;
 line-height:1.5;
-box-shadow:0 10px 25px rgba(0,0,0,.3);
 }
 
 .notification.show{
@@ -173,7 +151,6 @@ opacity:1;
 
 <body>
 
-<!-- MENU -->
 <div id="menu" class="screen active">
 <div class="box">
 <h1>VALENTINE PIXEL QUEST</h1>
@@ -182,60 +159,32 @@ opacity:1;
 </div>
 </div>
 
-<!-- GAME -->
 <div id="game" class="screen">
 <div class="game-wrapper">
 
 <div class="score-panel">
-<h2>SCORE BOARD</h2>
 <div class="score-value"><span id="score">0</span> / 1870</div>
-<div id="comboDisplay">Combo x1</div>
+<div>Combo x<span id="combo">1</span></div>
+<div class="combo-bar"><div id="comboFill" class="combo-fill"></div></div>
 </div>
 
-<div class="game-area">
 <div id="gameBoard"></div>
-</div>
 
-</div>
-
-<div id="instructionOverlay" class="overlay">
-<div class="overlay-box">
-<h1>MODE: ENTER HER WORLD</h1>
-<p>
-Klik block merah atau pink agar berubah menjadi biru.<br><br>
-Semakin cepat klik, semakin besar COMBO.<br><br>
-Block biru akan beregenerasi setelah 5 detik tidak disentuh.<br><br>
-Capai 1870 poin untuk membuka pesan spesial ❤️
-</p>
-<button class="btn" onclick="startGame()">PLAY</button>
 </div>
 </div>
 
-</div>
-
-<!-- STAY -->
 <div id="stay" class="screen">
 <div class="box">
 <h1>STAY IN REALITY</h1>
-<p>
-Di sini semuanya tenang.<br>
-Tanpa warna pink.<br>
-Tanpa kejutan kecil.<br><br>
-Apakah kamu yakin tidak ingin masuk ke dunianya?
-</p>
+<p>Dunia ini tenang... tapi tidak sehangat dunianya.</p>
 <button class="btn" onclick="backToMenu()">BACK TO MENU</button>
 </div>
 </div>
 
-<!-- ENDING -->
 <div id="ending" class="screen">
 <div class="box">
 <h1>HAPPY VALENTINE ❤️</h1>
-<p>
-1870 poin tercapai.<br><br>
-Terima kasih sudah jadi warna paling indah dalam hidupku.<br>
-Kamu selalu bikin dunia terasa lebih hangat.
-</p>
+<p>Kamu adalah warna paling indah dalam hidupku.</p>
 <button class="btn" onclick="backToMenu()">BACK TO MENU</button>
 </div>
 </div>
@@ -243,11 +192,21 @@ Kamu selalu bikin dunia terasa lebih hangat.
 <div id="notif" class="notification"></div>
 
 <script>
-let score=0;
-let combo=1;
-let lastClick=0;
+let score=0, combo=1, lastClick=0;
 let regenTimers=new Map();
-let gameStarted=false;
+let audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
+function playNotifSound(){
+let osc=audioCtx.createOscillator();
+let gain=audioCtx.createGain();
+osc.type="sine";
+osc.frequency.setValueAtTime(880,audioCtx.currentTime);
+gain.gain.setValueAtTime(.1,audioCtx.currentTime);
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+osc.stop(audioCtx.currentTime+.15);
+}
 
 function switchScreen(from,to){
 document.getElementById(from).classList.remove("active");
@@ -259,24 +218,15 @@ switchScreen("menu","game");
 generateBoard();
 }
 
-function enterStay(){
-switchScreen("menu","stay");
-}
-
+function enterStay(){switchScreen("menu","stay")}
 function backToMenu(){
-score=0;
-combo=1;
-gameStarted=false;
+score=0;combo=1;
 document.getElementById("score").innerText=0;
-document.getElementById("comboDisplay").innerText="Combo x1";
+document.getElementById("combo").innerText=1;
+document.getElementById("comboFill").style.width="0%";
 switchScreen("game","menu");
 switchScreen("stay","menu");
 switchScreen("ending","menu");
-}
-
-function startGame(){
-document.getElementById("instructionOverlay").style.display="none";
-gameStarted=true;
 }
 
 function generateBoard(){
@@ -286,64 +236,77 @@ for(let i=0;i<64;i++){
 let block=document.createElement("div");
 block.className="block";
 setRandomColor(block);
-block.onclick=()=>clickBlock(block);
+block.onclick=(e)=>clickBlock(block,e);
 board.appendChild(block);
 }
 }
 
 function setRandomColor(block){
 const colors=["#ff8fab","#ffc8dd","#ff5d8f"];
-let color=colors[Math.floor(Math.random()*colors.length)];
-block.style.background=color;
+block.style.background=colors[Math.floor(Math.random()*3)];
 block.dataset.state="active";
 }
 
-function clickBlock(block){
-if(!gameStarted) return;
+function clickBlock(block,e){
 if(block.dataset.state==="blue") return;
 
 let now=Date.now();
 let diff=now-lastClick;
 lastClick=now;
+combo=diff<600?combo+1:1;
 
-if(diff<700){combo++} else {combo=1}
-
-document.getElementById("comboDisplay").innerText="Combo x"+combo;
+document.getElementById("combo").innerText=combo;
+document.getElementById("comboFill").style.width=Math.min(combo*10,100)+"%";
 
 block.style.background="#a2d2ff";
 block.dataset.state="blue";
+
 score+=10*combo;
 document.getElementById("score").innerText=score;
+
+spawnParticles(block);
+
+if(combo>=5) block.style.transform="scale(1.2)";
+setTimeout(()=>block.style.transform="scale(1)",200);
 
 scheduleRegen(block);
 checkMilestone();
 
-if(score>=1870){
-setTimeout(()=>switchScreen("game","ending"),600);
+if(score>=1870) setTimeout(()=>switchScreen("game","ending"),800);
+}
+
+function spawnParticles(block){
+for(let i=0;i<6;i++){
+let p=document.createElement("div");
+p.className="particle";
+p.style.left="20px";
+p.style.top="20px";
+p.style.setProperty("--x",(Math.random()*60-30)+"px");
+p.style.setProperty("--y",(Math.random()*60-30)+"px");
+block.appendChild(p);
+setTimeout(()=>p.remove(),600);
 }
 }
 
 function scheduleRegen(block){
 if(regenTimers.has(block)) clearTimeout(regenTimers.get(block));
-
 let timer=setTimeout(()=>{
 setRandomColor(block);
 block.classList.add("fadeIn");
 block.dataset.state="active";
 },5000);
-
 regenTimers.set(block,timer);
 }
 
 function checkMilestone(){
 let text="";
-if(score>=300 && score<350)
-text="Kamu bikin hariku selalu lebih cerah 💕";
-if(score>=800 && score<850)
-text="Semakin lama main, semakin aku sayang kamu 💖";
-if(score>=1400 && score<1450)
-text="Hampir sampai… kamu luar biasa banget 🌸";
-if(text!=="") showNotif(text);
+if(score===500) text="Kamu selalu bikin aku senyum tiap hari 💕";
+if(score===1200) text="Mainnya jago... tapi kamu lebih jago bikin aku jatuh hati 💖";
+if(score===1600) text="Sedikit lagi... seperti perjalananku menuju hatimu 🌸";
+if(text!==""){
+showNotif(text);
+playNotifSound();
+}
 }
 
 function showNotif(text){
