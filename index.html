@@ -150,9 +150,10 @@ opacity:1;
 
 <!-- GAME -->
 <div id="game" class="screen">
-  
+
   <div class="game-wrapper">
 
+    <!-- SCORE PANEL -->
     <div class="score-panel">
       <h2>SCORE BOARD</h2>
       <div class="score-value">
@@ -160,20 +161,30 @@ opacity:1;
       </div>
     </div>
 
+    <!-- GAME AREA -->
     <div class="game-area">
-      <div class="instruction">
-        Petunjuk:<br>
-        Klik block warna merah hingga pink<br>
-        untuk mengubahnya menjadi biru.<br>
-        Capai 180 poin untuk membuka pesan spesial ❤️
-      </div>
       <div id="gameBoard"></div>
     </div>
 
   </div>
 
-</div>
+  <!-- INSTRUCTION OVERLAY -->
+  <div id="instructionOverlay" class="overlay active">
+    <div class="overlay-box">
+      <h2>CARA BERMAIN</h2>
+      <p>
+        Klik block berwarna merah hingga pink<br>
+        untuk mengubahnya menjadi biru.<br><br>
+        Setiap block yang berhasil diubah<br>
+        bernilai 10 poin.<br><br>
+        Capai 180 poin untuk membuka<br>
+        pesan spesial Valentine ❤️
+      </p>
+      <button class="btn" onclick="startGame()">PLAY</button>
+    </div>
+  </div>
 
+</div>
 <!-- STAY SCREEN -->
 <div id="stay" class="screen">
 <div class="box">
