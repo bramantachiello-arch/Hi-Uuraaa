@@ -15,7 +15,7 @@ height:100vh;
 overflow:hidden;
 background:linear-gradient(-45deg,#bde0fe,#ffc8dd,#a2d2ff,#ffafcc);
 background-size:400% 400%;
-animation:bgMove 15s ease infinite;
+animation:bgMove 18s ease infinite;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -33,7 +33,7 @@ position:absolute;
 opacity:0;
 pointer-events:none;
 transform:scale(.9);
-transition:all .5s ease;
+transition:.5s ease;
 text-align:center;
 }
 
@@ -44,23 +44,15 @@ transform:scale(1);
 }
 
 .box{
-background:rgba(0,0,0,.5);
+background:rgba(0,0,0,.55);
 padding:40px;
 border-radius:20px;
 width:420px;
-box-shadow:0 0 25px rgba(255,255,255,.3);
+box-shadow:0 0 30px rgba(255,255,255,.25);
 }
 
-h1{
-font-size:16px;
-margin-bottom:25px;
-}
-
-p{
-font-size:10px;
-line-height:1.6;
-margin-bottom:20px;
-}
+h1{font-size:14px;margin-bottom:20px}
+p{font-size:9px;line-height:1.6;margin-bottom:20px}
 
 .btn{
 margin:10px;
@@ -70,48 +62,89 @@ background:#ff8fab;
 color:white;
 cursor:pointer;
 border-radius:12px;
-font-size:10px;
+font-size:9px;
 transition:.3s;
 }
-
 .btn:hover{
 background:#ff5d8f;
 transform:scale(1.05);
 }
 
+.game-wrapper{
+display:flex;
+gap:40px;
+align-items:flex-start;
+}
+
+.score-panel{
+background:rgba(0,0,0,.6);
+padding:20px;
+border-radius:15px;
+width:220px;
+text-align:center;
+box-shadow:0 0 20px rgba(255,255,255,.2);
+}
+
+.score-panel h2{
+font-size:10px;
+margin-bottom:15px;
+}
+
+.score-value{
+font-size:12px;
+margin-bottom:15px;
+}
+
+#comboDisplay{
+font-size:9px;
+color:#ffc8dd;
+}
+
+.game-area{
+background:rgba(0,0,0,.4);
+padding:20px;
+border-radius:20px;
+}
+
 #gameBoard{
 display:grid;
-grid-template-columns:repeat(8,40px);
+grid-template-columns:repeat(8,45px);
 gap:6px;
-margin-top:20px;
 }
 
 .block{
-width:40px;
-height:40px;
+width:45px;
+height:45px;
 border-radius:8px;
 cursor:pointer;
 transition:.2s;
+opacity:1;
 }
 
-.block:hover{
-transform:scale(1.1);
+.block.fadeIn{
+animation:fadeIn .6s ease;
 }
 
-.score{
+@keyframes fadeIn{
+from{opacity:0}
+to{opacity:1}
+}
+
+.overlay{
 position:absolute;
-top:20px;
-left:20px;
-font-size:12px;
+inset:0;
+background:rgba(0,0,0,.85);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:10;
 }
 
-.instruction{
-position:absolute;
-top:50px;
-left:20px;
-font-size:8px;
-width:220px;
-line-height:1.4;
+.overlay-box{
+background:rgba(255,255,255,.1);
+padding:35px;
+border-radius:20px;
+width:420px;
 }
 
 .notification{
@@ -121,13 +154,14 @@ right:20px;
 background:white;
 color:black;
 padding:15px;
-border-radius:15px;
-width:260px;
-transform:translateX(300px);
+border-radius:18px;
+width:280px;
+transform:translateX(350px);
 opacity:0;
-transition:.5s;
-font-size:10px;
-line-height:1.4;
+transition:.5s ease;
+font-size:9px;
+line-height:1.5;
+box-shadow:0 10px 25px rgba(0,0,0,.3);
 }
 
 .notification.show{
@@ -139,7 +173,7 @@ opacity:1;
 
 <body>
 
-<!-- MAIN MENU -->
+<!-- MENU -->
 <div id="menu" class="screen active">
 <div class="box">
 <h1>VALENTINE PIXEL QUEST</h1>
@@ -150,50 +184,44 @@ opacity:1;
 
 <!-- GAME -->
 <div id="game" class="screen">
+<div class="game-wrapper">
 
-  <div class="game-wrapper">
+<div class="score-panel">
+<h2>SCORE BOARD</h2>
+<div class="score-value"><span id="score">0</span> / 1870</div>
+<div id="comboDisplay">Combo x1</div>
+</div>
 
-    <!-- SCORE PANEL -->
-    <div class="score-panel">
-      <h2>SCORE BOARD</h2>
-      <div class="score-value">
-        <span id="score">0</span> / 180
-      </div>
-    </div>
-
-    <!-- GAME AREA -->
-    <div class="game-area">
-      <div id="gameBoard"></div>
-    </div>
-
-  </div>
-
-  <!-- INSTRUCTION OVERLAY -->
-  <div id="instructionOverlay" class="overlay active">
-    <div class="overlay-box">
-      <h2>CARA BERMAIN</h2>
-      <p>
-        Klik block berwarna merah hingga pink<br>
-        untuk mengubahnya menjadi biru.<br><br>
-        Setiap block yang berhasil diubah<br>
-        bernilai 10 poin.<br><br>
-        Capai 180 poin untuk membuka<br>
-        pesan spesial Valentine ❤️
-      </p>
-      <button class="btn" onclick="startGame()">PLAY</button>
-    </div>
-  </div>
+<div class="game-area">
+<div id="gameBoard"></div>
+</div>
 
 </div>
-<!-- STAY SCREEN -->
+
+<div id="instructionOverlay" class="overlay">
+<div class="overlay-box">
+<h1>MODE: ENTER HER WORLD</h1>
+<p>
+Klik block merah atau pink agar berubah menjadi biru.<br><br>
+Semakin cepat klik, semakin besar COMBO.<br><br>
+Block biru akan beregenerasi setelah 5 detik tidak disentuh.<br><br>
+Capai 1870 poin untuk membuka pesan spesial ❤️
+</p>
+<button class="btn" onclick="startGame()">PLAY</button>
+</div>
+</div>
+
+</div>
+
+<!-- STAY -->
 <div id="stay" class="screen">
 <div class="box">
 <h1>STAY IN REALITY</h1>
 <p>
-Reality terasa biasa saja.<br>
-Tidak ada warna merah muda.<br>
-Tidak ada kejutan kecil.<br><br>
-Apakah kamu yakin ingin tetap di sini?
+Di sini semuanya tenang.<br>
+Tanpa warna pink.<br>
+Tanpa kejutan kecil.<br><br>
+Apakah kamu yakin tidak ingin masuk ke dunianya?
 </p>
 <button class="btn" onclick="backToMenu()">BACK TO MENU</button>
 </div>
@@ -204,9 +232,9 @@ Apakah kamu yakin ingin tetap di sini?
 <div class="box">
 <h1>HAPPY VALENTINE ❤️</h1>
 <p>
-180 poin tercapai.<br><br>
-Terima kasih sudah menjadi<br>
-warna terindah dalam hidupku.
+1870 poin tercapai.<br><br>
+Terima kasih sudah jadi warna paling indah dalam hidupku.<br>
+Kamu selalu bikin dunia terasa lebih hangat.
 </p>
 <button class="btn" onclick="backToMenu()">BACK TO MENU</button>
 </div>
@@ -216,20 +244,14 @@ warna terindah dalam hidupku.
 
 <script>
 let score=0;
+let combo=1;
+let lastClick=0;
+let regenTimers=new Map();
+let gameStarted=false;
 
 function switchScreen(from,to){
 document.getElementById(from).classList.remove("active");
-setTimeout(()=>{
-document.getElementById(to).classList.add("active");
-},300);
-}
-
-function backToMenu(){
-score=0;
-document.getElementById("score").innerText=0;
-switchScreen("game","menu");
-switchScreen("stay","menu");
-switchScreen("ending","menu");
+setTimeout(()=>document.getElementById(to).classList.add("active"),300);
 }
 
 function enterGame(){
@@ -241,64 +263,94 @@ function enterStay(){
 switchScreen("menu","stay");
 }
 
+function backToMenu(){
+score=0;
+combo=1;
+gameStarted=false;
+document.getElementById("score").innerText=0;
+document.getElementById("comboDisplay").innerText="Combo x1";
+switchScreen("game","menu");
+switchScreen("stay","menu");
+switchScreen("ending","menu");
+}
+
+function startGame(){
+document.getElementById("instructionOverlay").style.display="none";
+gameStarted=true;
+}
+
 function generateBoard(){
 let board=document.getElementById("gameBoard");
 board.innerHTML="";
 for(let i=0;i<64;i++){
 let block=document.createElement("div");
 block.className="block";
-let color=randomColor();
-block.style.background=color;
-block.dataset.color=color;
+setRandomColor(block);
 block.onclick=()=>clickBlock(block);
 board.appendChild(block);
 }
 }
 
-function randomColor(){
-const colors=["#ff8fab","#ffc8dd","#ff5d8f","#a2d2ff"];
-return colors[Math.floor(Math.random()*colors.length)];
+function setRandomColor(block){
+const colors=["#ff8fab","#ffc8dd","#ff5d8f"];
+let color=colors[Math.floor(Math.random()*colors.length)];
+block.style.background=color;
+block.dataset.state="active";
 }
 
 function clickBlock(block){
-let current=block.style.backgroundColor;
+if(!gameStarted) return;
+if(block.dataset.state==="blue") return;
 
-if(current.includes("255") || block.dataset.color!="#a2d2ff"){
+let now=Date.now();
+let diff=now-lastClick;
+lastClick=now;
+
+if(diff<700){combo++} else {combo=1}
+
+document.getElementById("comboDisplay").innerText="Combo x"+combo;
+
 block.style.background="#a2d2ff";
-block.dataset.color="#a2d2ff";
-score+=10;
+block.dataset.state="blue";
+score+=10*combo;
 document.getElementById("score").innerText=score;
+
+scheduleRegen(block);
 checkMilestone();
+
+if(score>=1870){
+setTimeout(()=>switchScreen("game","ending"),600);
+}
 }
 
-if(score>=180){
-setTimeout(()=>{
-switchScreen("game","ending");
-},600);
-}
+function scheduleRegen(block){
+if(regenTimers.has(block)) clearTimeout(regenTimers.get(block));
+
+let timer=setTimeout(()=>{
+setRandomColor(block);
+block.classList.add("fadeIn");
+block.dataset.state="active";
+},5000);
+
+regenTimers.set(block,timer);
 }
 
 function checkMilestone(){
 let text="";
-if(score===50){
-text="Kamu selalu bikin hariku lebih cerah 💖";
-}
-if(score===100){
-text="Setengah perjalanan… seperti kamu melengkapi aku 🌸";
-}
-if(score===150){
-text="Hampir sampai… hatiku ikut deg-deg-an 💕";
-}
-if(text!==""){
-showNotif(text);
-}
+if(score>=300 && score<350)
+text="Kamu bikin hariku selalu lebih cerah 💕";
+if(score>=800 && score<850)
+text="Semakin lama main, semakin aku sayang kamu 💖";
+if(score>=1400 && score<1450)
+text="Hampir sampai… kamu luar biasa banget 🌸";
+if(text!=="") showNotif(text);
 }
 
 function showNotif(text){
 let n=document.getElementById("notif");
 n.innerHTML=text;
 n.classList.add("show");
-setTimeout(()=>n.classList.remove("show"),3500);
+setTimeout(()=>n.classList.remove("show"),4000);
 }
 </script>
 
