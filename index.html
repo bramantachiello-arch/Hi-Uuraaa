@@ -3,152 +3,196 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Digital Blue World</title>
+<title>Digital Valentine</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{
   height:100vh;
-  background:#e8f1ff;
+  background:#fce7f3;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-family:'Inter',sans-serif;
+  font-family:'Press Start 2P',cursive;
+  overflow:hidden;
 }
 
-/* ===== MAIN WINDOW ===== */
-
+/* WINDOW */
 .window{
-  width:420px;
+  width:440px;
   background:white;
   border:4px solid #1e3a8a;
   box-shadow:8px 8px 0px #1e3a8a;
+  animation:pop .5s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.8);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
 
 .titlebar{
   background:#1e3a8a;
   color:white;
-  padding:10px;
-  font-family:'Press Start 2P',cursive;
+  padding:12px;
   font-size:10px;
-  letter-spacing:1px;
 }
 
 .content{
   padding:25px;
   text-align:center;
-}
-
-.loading{
-  font-family:'Press Start 2P';
   font-size:10px;
   color:#1e3a8a;
-  margin-bottom:20px;
 }
 
-.bar{
-  height:14px;
-  border:2px solid #1e3a8a;
-  margin-bottom:15px;
-  position:relative;
-}
-
-.fill{
-  height:100%;
-  width:0%;
-  background:#60a5fa;
-  transition:1.5s;
-}
-
-.pixel-btn{
+.btn{
   display:inline-block;
-  padding:10px 15px;
+  padding:10px;
   border:3px solid #1e3a8a;
   background:#93c5fd;
-  font-family:'Press Start 2P';
-  font-size:9px;
+  margin:10px;
   cursor:pointer;
-  margin:8px;
+  font-size:8px;
 }
 
-.pixel-btn:hover{
+.btn:hover{
   background:#60a5fa;
 }
 
-.scene{
+.hidden{
   display:none;
+}
+
+.heart{
+  font-size:30px;
+  cursor:pointer;
+  margin:15px;
+  transition:.2s;
+}
+
+.heart:hover{
+  transform:scale(1.2);
+}
+
+.message{
   margin-top:15px;
-  font-size:13px;
-  color:#1e3a8a;
+  min-height:80px;
   line-height:1.6;
 }
 
-.strawberry{
-  font-size:18px;
+.fade{
+  animation:fade .5s ease;
+}
+
+@keyframes fade{
+  from{opacity:0}
+  to{opacity:1}
 }
 </style>
 </head>
 
 <body>
 
-<div class="window">
-  <div class="titlebar">
-    DIGITAL BLUE PARADISE
-  </div>
+<div class="window" id="window">
+  <div class="titlebar">DIGITAL VALENTINE OS 💘</div>
+  <div class="content" id="mainContent">
 
-  <div class="content">
-
-    <div class="loading">LOADING...</div>
-
-    <div class="bar">
-      <div class="fill" id="fill"></div>
+    <div id="menuScreen">
+      <p>LOADING LOVE SYSTEM...</p>
+      <br>
+      <div class="btn" onclick="enterWorld()">ENTER HER WORLD 💙</div>
+      <div class="btn" onclick="stayReality()">STAY IN REALITY</div>
     </div>
 
-    <div id="menu">
-      <button class="pixel-btn" onclick="enterWorld()">ENTER HER WORLD</button>
-      <button class="pixel-btn" onclick="stayReality()">STAY IN REALITY</button>
+    <!-- REALITY SCREEN -->
+    <div id="realityScreen" class="hidden fade">
+      <p>⚠ ERROR</p><br>
+      REALITY MODE FAILED.<br><br>
+      SYSTEM MESSAGE:<br>
+      SHE IS YOUR REALITY NOW 💙<br><br>
+      <div class="btn" onclick="goBack()">GO BACK</div>
     </div>
 
-    <div class="scene" id="scene"></div>
+    <!-- ENTER WORLD SCREEN -->
+    <div id="worldScreen" class="hidden fade">
+      <p>WELCOME TO HER BLUE VALENTINE WORLD 💙🍓</p>
+
+      <div class="heart" onclick="clickHeart()">💙</div>
+      <div id="counter">0 / 10</div>
+
+      <div class="message" id="message">
+        Click the heart 10 times...
+      </div>
+
+      <div class="btn" onclick="resetGame()">RESET</div>
+    </div>
 
   </div>
 </div>
 
 <script>
+let count = 0;
 
-setTimeout(()=>{
-  document.getElementById("fill").style.width="100%";
-},300);
+const messages = [
+"Satu klik... dunia terasa lebih biru 💙",
+"Dua klik... kayak stroberi manis di hari valentine 🍓",
+"Tiga klik... kamu tau gak kamu spesial?",
+"Empat klik... sistem mulai mendeteksi perasaan.",
+"Lima klik... separuh jalan menuju hati kamu.",
+"Enam klik... kenapa nyaman banget ya?",
+"Tujuh klik... loading perasaan 70%.",
+"Delapan klik... hampir nggak bisa balik lagi.",
+"Sembilan klik... jantung digital berdebar.",
+"Sepuluh klik... 💘"
+];
 
 function enterWorld(){
-  const scene = document.getElementById("scene");
-  scene.style.display="block";
-  scene.innerHTML=`
-    💙 Welcome to her blue universe 💙 <br><br>
-    Di dunia ini, semuanya warna biru.  
-    Tenang. Lembut. Kayak dia. <br><br>
-    Ada aroma stroberi samar-samar 🍓  
-    dan rasanya hangat meskipun digital. <br><br>
-    <b>Kamu sadar satu hal...</b><br>
-    Kamu nggak masuk ke dunia dia.  
-    Kamu memang udah ada di situ dari awal.
-  `;
+  transitionScreen("worldScreen");
 }
 
 function stayReality(){
-  const scene = document.getElementById("scene");
-  scene.style.display="block";
-  scene.innerHTML=`
-    ⚠ ERROR 404: REALITY NOT FOUND <br><br>
-    Dunia nyata terasa biasa aja. <br><br>
-    Sistem mendeteksi bahwa  
-    <b>dia adalah realita paling indah.</b> 💙
-  `;
+  transitionScreen("realityScreen");
 }
 
+function goBack(){
+  transitionScreen("menuScreen");
+}
+
+function transitionScreen(id){
+  document.getElementById("menuScreen").classList.add("hidden");
+  document.getElementById("worldScreen").classList.add("hidden");
+  document.getElementById("realityScreen").classList.add("hidden");
+
+  setTimeout(()=>{
+    document.getElementById(id).classList.remove("hidden");
+  },200);
+}
+
+function clickHeart(){
+  if(count>=10) return;
+  count++;
+  document.getElementById("counter").innerText = count + " / 10";
+  document.getElementById("message").innerText = messages[count-1];
+
+  if(count===10){
+    setTimeout(()=>{
+      document.getElementById("message").innerHTML =
+      "💘 HAPPY VALENTINE 💘<br><br>" +
+      "Kamu itu biru yang tenang<br>" +
+      "dan stroberi yang manis.<br><br>" +
+      "Dan aku selalu nyaman setiap mikirin kamu 💙🍓";
+    },1000);
+  }
+}
+
+function resetGame(){
+  count=0;
+  document.getElementById("counter").innerText="0 / 10";
+  document.getElementById("message").innerText="Click the heart 10 times...";
+}
 </script>
 
 </body>
