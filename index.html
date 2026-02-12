@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Digital Valentine</title>
+<title>Digital Valentine Experience</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
@@ -12,7 +12,7 @@
 
 body{
   height:100vh;
-  background:#fce7f3;
+  background:linear-gradient(135deg,#fbcfe8,#dbeafe);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -20,18 +20,16 @@ body{
   overflow:hidden;
 }
 
-/* WINDOW */
+/* MAIN WINDOW */
 .window{
-  width:440px;
+  width:520px;
+  height:640px;
   background:white;
   border:4px solid #1e3a8a;
-  box-shadow:8px 8px 0px #1e3a8a;
-  animation:pop .5s ease;
-}
-
-@keyframes pop{
-  from{transform:scale(.8);opacity:0}
-  to{transform:scale(1);opacity:1}
+  box-shadow:8px 8px 0 #1e3a8a;
+  position:relative;
+  overflow:hidden;
+  transition:.5s;
 }
 
 .titlebar{
@@ -39,57 +37,112 @@ body{
   color:white;
   padding:12px;
   font-size:10px;
+  text-align:center;
 }
 
 .content{
-  padding:25px;
+  padding:20px;
   text-align:center;
-  font-size:10px;
+  font-size:9px;
   color:#1e3a8a;
+  height:calc(100% - 40px);
+  position:relative;
 }
 
+/* BUTTON */
 .btn{
-  display:inline-block;
   padding:10px;
   border:3px solid #1e3a8a;
   background:#93c5fd;
   margin:10px;
   cursor:pointer;
-  font-size:8px;
+  display:inline-block;
+  transition:.2s;
 }
-
 .btn:hover{
   background:#60a5fa;
+  transform:scale(1.05);
 }
 
-.hidden{
-  display:none;
+.hidden{display:none}
+
+/* GAME */
+.gameArea{
+  width:100%;
+  height:400px;
+  border:3px solid #1e3a8a;
+  margin-top:15px;
+  position:relative;
+  overflow:hidden;
 }
 
 .heart{
-  font-size:30px;
+  position:absolute;
+  font-size:28px;
   cursor:pointer;
-  margin:15px;
-  transition:.2s;
+  animation:float 3s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(0)}
+  to{transform:translateY(-25px)}
 }
 
-.heart:hover{
-  transform:scale(1.2);
+/* OVERLAY FINALE */
+.overlay{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(180deg,#1e3a8a,#9333ea);
+  color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:30px;
+  opacity:0;
+  pointer-events:none;
+  transition:1s;
 }
 
-.message{
-  margin-top:15px;
-  min-height:80px;
-  line-height:1.6;
+.overlay.show{
+  opacity:1;
+  pointer-events:auto;
 }
 
-.fade{
-  animation:fade .5s ease;
+.overlay h1{
+  font-size:16px;
+  margin-bottom:20px;
+  animation:scaleIn 1s ease forwards;
 }
 
-@keyframes fade{
-  from{opacity:0}
-  to{opacity:1}
+@keyframes scaleIn{
+  from{transform:scale(.5);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.typewriter{
+  font-size:9px;
+  line-height:1.8;
+  max-width:400px;
+  min-height:100px;
+}
+
+.confetti{
+  position:absolute;
+  font-size:16px;
+  animation:fall 3s linear forwards;
+}
+@keyframes fall{
+  from{transform:translateY(-20px)}
+  to{transform:translateY(700px)}
+}
+
+.blur{
+  filter:blur(4px);
+  transform:scale(.98);
 }
 </style>
 </head>
@@ -97,101 +150,136 @@ body{
 <body>
 
 <div class="window" id="window">
-  <div class="titlebar">DIGITAL VALENTINE OS 💘</div>
-  <div class="content" id="mainContent">
+<div class="titlebar">DIGITAL VALENTINE EXPERIENCE 💘</div>
+<div class="content">
 
-    <div id="menuScreen">
-      <p>LOADING LOVE SYSTEM...</p>
-      <br>
-      <div class="btn" onclick="enterWorld()">ENTER HER WORLD 💙</div>
-      <div class="btn" onclick="stayReality()">STAY IN REALITY</div>
-    </div>
+<div id="menu">
+  <p>VALENTINE SYSTEM READY...</p>
+  <div class="btn" onclick="startGame()">ENTER HER WORLD 💙</div>
+</div>
 
-    <!-- REALITY SCREEN -->
-    <div id="realityScreen" class="hidden fade">
-      <p>⚠ ERROR</p><br>
-      REALITY MODE FAILED.<br><br>
-      SYSTEM MESSAGE:<br>
-      SHE IS YOUR REALITY NOW 💙<br><br>
-      <div class="btn" onclick="goBack()">GO BACK</div>
-    </div>
+<div id="game" class="hidden">
+  <div>TIME: <span id="time">180</span>s</div>
+  <div>SCORE: <span id="score">0</span></div>
+  <div class="gameArea" id="gameArea"></div>
+</div>
 
-    <!-- ENTER WORLD SCREEN -->
-    <div id="worldScreen" class="hidden fade">
-      <p>WELCOME TO HER BLUE VALENTINE WORLD 💙🍓</p>
+</div>
 
-      <div class="heart" onclick="clickHeart()">💙</div>
-      <div id="counter">0 / 10</div>
+<!-- FINALE OVERLAY -->
+<div class="overlay" id="overlay">
+  <h1>💘 HAPPY VALENTINE 💘</h1>
+  <div class="typewriter" id="finalText"></div>
+  <div class="btn" onclick="restart()">BACK TO MENU</div>
+</div>
 
-      <div class="message" id="message">
-        Click the heart 10 times...
-      </div>
-
-      <div class="btn" onclick="resetGame()">RESET</div>
-    </div>
-
-  </div>
 </div>
 
 <script>
-let count = 0;
+let time=180;
+let score=0;
+let timerInterval;
+let spawnInterval;
 
-const messages = [
-"Satu klik... dunia terasa lebih biru 💙",
-"Dua klik... kayak stroberi manis di hari valentine 🍓",
-"Tiga klik... kamu tau gak kamu spesial?",
-"Empat klik... sistem mulai mendeteksi perasaan.",
-"Lima klik... separuh jalan menuju hati kamu.",
-"Enam klik... kenapa nyaman banget ya?",
-"Tujuh klik... loading perasaan 70%.",
-"Delapan klik... hampir nggak bisa balik lagi.",
-"Sembilan klik... jantung digital berdebar.",
-"Sepuluh klik... 💘"
-];
-
-function enterWorld(){
-  transitionScreen("worldScreen");
-}
-
-function stayReality(){
-  transitionScreen("realityScreen");
-}
-
-function goBack(){
-  transitionScreen("menuScreen");
-}
-
-function transitionScreen(id){
-  document.getElementById("menuScreen").classList.add("hidden");
-  document.getElementById("worldScreen").classList.add("hidden");
-  document.getElementById("realityScreen").classList.add("hidden");
-
-  setTimeout(()=>{
-    document.getElementById(id).classList.remove("hidden");
-  },200);
-}
-
-function clickHeart(){
-  if(count>=10) return;
-  count++;
-  document.getElementById("counter").innerText = count + " / 10";
-  document.getElementById("message").innerText = messages[count-1];
-
-  if(count===10){
-    setTimeout(()=>{
-      document.getElementById("message").innerHTML =
-      "💘 HAPPY VALENTINE 💘<br><br>" +
-      "Kamu itu biru yang tenang<br>" +
-      "dan stroberi yang manis.<br><br>" +
-      "Dan aku selalu nyaman setiap mikirin kamu 💙🍓";
-    },1000);
-  }
+function startGame(){
+  document.getElementById("menu").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  resetGame();
+  timerInterval=setInterval(updateTimer,1000);
+  spawnInterval=setInterval(spawnHeart,700);
 }
 
 function resetGame(){
-  count=0;
-  document.getElementById("counter").innerText="0 / 10";
-  document.getElementById("message").innerText="Click the heart 10 times...";
+  time=180;
+  score=0;
+  updateUI();
+  document.getElementById("gameArea").innerHTML="";
+}
+
+function updateUI(){
+  document.getElementById("time").innerText=time;
+  document.getElementById("score").innerText=score;
+}
+
+function updateTimer(){
+  time--;
+  updateUI();
+  if(time<=0){
+    endGame();
+  }
+}
+
+function spawnHeart(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerText="💙";
+  heart.style.left=Math.random()*460+"px";
+  heart.style.top=Math.random()*350+"px";
+  heart.onclick=function(){
+    score++;
+    updateUI();
+    heart.remove();
+  };
+  document.getElementById("gameArea").appendChild(heart);
+  setTimeout(()=>heart.remove(),4000);
+}
+
+function endGame(){
+  clearInterval(timerInterval);
+  clearInterval(spawnInterval);
+  document.getElementById("window").classList.add("blur");
+  showOverlay();
+}
+
+function showOverlay(){
+  const overlay=document.getElementById("overlay");
+  overlay.classList.add("show");
+  typeWriterEffect(
+`Tiga menit mungkin terasa singkat.
+
+Tapi setiap detik yang aku habiskan
+memikirkan kamu
+rasanya jauh lebih lama dan hangat.
+
+Skor kamu: ${score}
+
+Dan dari semua pilihan di dunia ini,
+aku tetap pilih kamu. 💙🍓`
+  );
+  confetti();
+}
+
+function typeWriterEffect(text){
+  const element=document.getElementById("finalText");
+  element.innerHTML="";
+  let i=0;
+  const speed=40;
+  function typing(){
+    if(i<text.length){
+      element.innerHTML+=text.charAt(i);
+      i++;
+      setTimeout(typing,speed);
+    }
+  }
+  typing();
+}
+
+function confetti(){
+  for(let i=0;i<50;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.innerText="💖";
+    c.style.left=Math.random()*520+"px";
+    document.getElementById("window").appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+
+function restart(){
+  document.getElementById("overlay").classList.remove("show");
+  document.getElementById("window").classList.remove("blur");
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("menu").classList.remove("hidden");
 }
 </script>
 
