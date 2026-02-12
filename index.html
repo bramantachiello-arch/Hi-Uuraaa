@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Digital Valentine Experience</title>
+<title>Blue Valentine Block Game</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
@@ -12,7 +12,7 @@
 
 body{
   height:100vh;
-  background:linear-gradient(135deg,#fbcfe8,#dbeafe);
+  background:linear-gradient(135deg,#dbeafe,#fbcfe8);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -20,16 +20,14 @@ body{
   overflow:hidden;
 }
 
-/* MAIN WINDOW */
 .window{
-  width:520px;
-  height:640px;
+  width:560px;
+  height:680px;
   background:white;
   border:4px solid #1e3a8a;
-  box-shadow:8px 8px 0 #1e3a8a;
+  box-shadow:10px 10px 0 #1e3a8a;
   position:relative;
   overflow:hidden;
-  transition:.5s;
 }
 
 .titlebar{
@@ -49,9 +47,8 @@ body{
   position:relative;
 }
 
-/* BUTTON */
 .btn{
-  padding:10px;
+  padding:12px;
   border:3px solid #1e3a8a;
   background:#93c5fd;
   margin:10px;
@@ -66,45 +63,54 @@ body{
 
 .hidden{display:none}
 
-/* GAME */
-.gameArea{
-  width:100%;
-  height:400px;
+.grid{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+}
+
+.cell{
+  width:90px;
+  height:90px;
+  background:#e0f2fe;
   border:3px solid #1e3a8a;
-  margin-top:15px;
-  position:relative;
-  overflow:hidden;
-}
-
-.heart{
-  position:absolute;
-  font-size:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   cursor:pointer;
-  animation:float 3s linear infinite;
-}
-@keyframes float{
-  from{transform:translateY(0)}
-  to{transform:translateY(-25px)}
+  transition:.15s;
 }
 
-/* OVERLAY FINALE */
+.cell.active{
+  background:#60a5fa;
+  transform:scale(1.05);
+}
+
+.scoreBox{
+  margin-top:15px;
+}
+
+.message{
+  margin-top:15px;
+  min-height:70px;
+  line-height:1.6;
+}
+
 .overlay{
   position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
+  inset:0;
   background:linear-gradient(180deg,#1e3a8a,#9333ea);
   color:white;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  text-align:center;
   padding:30px;
+  text-align:center;
   opacity:0;
   pointer-events:none;
-  transition:1s;
+  transition:.8s;
 }
 
 .overlay.show{
@@ -113,60 +119,53 @@ body{
 }
 
 .overlay h1{
-  font-size:16px;
+  font-size:14px;
   margin-bottom:20px;
-  animation:scaleIn 1s ease forwards;
-}
-
-@keyframes scaleIn{
-  from{transform:scale(.5);opacity:0}
-  to{transform:scale(1);opacity:1}
 }
 
 .typewriter{
   font-size:9px;
   line-height:1.8;
-  max-width:400px;
+  max-width:420px;
   min-height:100px;
-}
-
-.confetti{
-  position:absolute;
-  font-size:16px;
-  animation:fall 3s linear forwards;
-}
-@keyframes fall{
-  from{transform:translateY(-20px)}
-  to{transform:translateY(700px)}
-}
-
-.blur{
-  filter:blur(4px);
-  transform:scale(.98);
 }
 </style>
 </head>
 
 <body>
 
-<div class="window" id="window">
-<div class="titlebar">DIGITAL VALENTINE EXPERIENCE 💘</div>
+<div class="window">
+<div class="titlebar">BLUE VALENTINE BLOCK 💙</div>
 <div class="content">
 
+<!-- MENU -->
 <div id="menu">
-  <p>VALENTINE SYSTEM READY...</p>
+  <p>CHOOSE YOUR MODE</p>
   <div class="btn" onclick="startGame()">ENTER HER WORLD 💙</div>
+  <div class="btn" onclick="showReality()">STAY IN REALITY</div>
 </div>
 
+<!-- REALITY -->
+<div id="reality" class="hidden">
+  <p>⚠ REALITY MODE</p><br>
+  Tidak ada block. Tidak ada warna biru.<br><br>
+  Tapi tetap saja...<br>
+  kamu kepikiran dia 💙<br><br>
+  <div class="btn" onclick="goMenu()">BACK</div>
+</div>
+
+<!-- GAME -->
 <div id="game" class="hidden">
-  <div>TIME: <span id="time">180</span>s</div>
-  <div>SCORE: <span id="score">0</span></div>
-  <div class="gameArea" id="gameArea"></div>
+  <div class="scoreBox">SCORE: <span id="score">0</span> / 180</div>
+  <div class="grid" id="grid"></div>
+  <div class="message" id="message">
+    Raih 180 poin untuk membuka pesan spesial 💘
+  </div>
 </div>
 
 </div>
 
-<!-- FINALE OVERLAY -->
+<!-- FINALE -->
 <div class="overlay" id="overlay">
   <h1>💘 HAPPY VALENTINE 💘</h1>
   <div class="typewriter" id="finalText"></div>
@@ -176,108 +175,107 @@ body{
 </div>
 
 <script>
-let time=180;
 let score=0;
-let timerInterval;
-let spawnInterval;
+let activeIndex=null;
 
-function startGame(){
-  document.getElementById("menu").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-  resetGame();
-  timerInterval=setInterval(updateTimer,1000);
-  spawnInterval=setInterval(spawnHeart,700);
-}
+const milestoneMessages={
+30:"30 poin... kamu mulai masuk ke dunianya 💙",
+60:"60 poin... rasanya makin nyaman ya?",
+90:"90 poin... hampir setengah perjalanan hati.",
+120:"120 poin... kamu nggak mau berhenti ya?",
+150:"150 poin... deg-degan sedikit.",
+180:"180 poin... kamu berhasil 💘"
+};
 
-function resetGame(){
-  time=180;
-  score=0;
-  updateUI();
-  document.getElementById("gameArea").innerHTML="";
-}
-
-function updateUI(){
-  document.getElementById("time").innerText=time;
-  document.getElementById("score").innerText=score;
-}
-
-function updateTimer(){
-  time--;
-  updateUI();
-  if(time<=0){
-    endGame();
+function createGrid(){
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
+  for(let i=0;i<25;i++){
+    const cell=document.createElement("div");
+    cell.className="cell";
+    cell.onclick=()=>clickCell(i);
+    grid.appendChild(cell);
   }
 }
 
-function spawnHeart(){
-  const heart=document.createElement("div");
-  heart.className="heart";
-  heart.innerText="💙";
-  heart.style.left=Math.random()*460+"px";
-  heart.style.top=Math.random()*350+"px";
-  heart.onclick=function(){
-    score++;
-    updateUI();
-    heart.remove();
-  };
-  document.getElementById("gameArea").appendChild(heart);
-  setTimeout(()=>heart.remove(),4000);
+function activateRandom(){
+  const cells=document.querySelectorAll(".cell");
+  cells.forEach(c=>c.classList.remove("active"));
+  activeIndex=Math.floor(Math.random()*cells.length);
+  cells[activeIndex].classList.add("active");
+}
+
+function clickCell(index){
+  if(index===activeIndex){
+    score+=10;
+    document.getElementById("score").innerText=score;
+    checkMilestone();
+    activateRandom();
+    if(score>=180){
+      endGame();
+    }
+  }
+}
+
+function checkMilestone(){
+  if(milestoneMessages[score]){
+    document.getElementById("message").innerText=milestoneMessages[score];
+  }
+}
+
+function startGame(){
+  score=0;
+  document.getElementById("score").innerText=0;
+  document.getElementById("menu").classList.add("hidden");
+  document.getElementById("reality").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  document.getElementById("message").innerText="Raih 180 poin untuk membuka pesan spesial 💘";
+  createGrid();
+  activateRandom();
+}
+
+function showReality(){
+  document.getElementById("menu").classList.add("hidden");
+  document.getElementById("reality").classList.remove("hidden");
+}
+
+function goMenu(){
+  document.getElementById("reality").classList.add("hidden");
+  document.getElementById("menu").classList.remove("hidden");
 }
 
 function endGame(){
-  clearInterval(timerInterval);
-  clearInterval(spawnInterval);
-  document.getElementById("window").classList.add("blur");
-  showOverlay();
-}
+  document.getElementById("overlay").classList.add("show");
+  typeWriter(
+`180 poin tercapai.
 
-function showOverlay(){
-  const overlay=document.getElementById("overlay");
-  overlay.classList.add("show");
-  typeWriterEffect(
-`Tiga menit mungkin terasa singkat.
+Setiap klik tadi
+kayak setiap detik aku
+yang selalu milih kamu.
 
-Tapi setiap detik yang aku habiskan
-memikirkan kamu
-rasanya jauh lebih lama dan hangat.
+Kamu itu biru yang paling tenang,
+dan stroberi yang paling manis.
 
-Skor kamu: ${score}
-
-Dan dari semua pilihan di dunia ini,
-aku tetap pilih kamu. 💙🍓`
+Happy Valentine 💙🍓`
   );
-  confetti();
 }
 
-function typeWriterEffect(text){
-  const element=document.getElementById("finalText");
-  element.innerHTML="";
+function typeWriter(text){
+  const el=document.getElementById("finalText");
+  el.innerHTML="";
   let i=0;
-  const speed=40;
   function typing(){
     if(i<text.length){
-      element.innerHTML+=text.charAt(i);
+      el.innerHTML+=text.charAt(i);
       i++;
-      setTimeout(typing,speed);
+      setTimeout(typing,35);
     }
   }
   typing();
 }
 
-function confetti(){
-  for(let i=0;i<50;i++){
-    const c=document.createElement("div");
-    c.className="confetti";
-    c.innerText="💖";
-    c.style.left=Math.random()*520+"px";
-    document.getElementById("window").appendChild(c);
-    setTimeout(()=>c.remove(),3000);
-  }
-}
-
 function restart(){
   document.getElementById("overlay").classList.remove("show");
-  document.getElementById("window").classList.remove("blur");
   document.getElementById("game").classList.add("hidden");
   document.getElementById("menu").classList.remove("hidden");
 }
