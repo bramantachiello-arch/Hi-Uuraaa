@@ -1,283 +1,285 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Blue Valentine Block Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Pixel Game</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Press Start 2P',cursive}
 
 body{
-  height:100vh;
-  background:linear-gradient(135deg,#dbeafe,#fbcfe8);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:'Press Start 2P',cursive;
-  overflow:hidden;
+height:100vh;
+overflow:hidden;
+background:linear-gradient(-45deg,#ff4e8a,#ff8fb1,#ff3f6c,#ff9ac5);
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-.window{
-  width:560px;
-  height:680px;
-  background:white;
-  border:4px solid #1e3a8a;
-  box-shadow:10px 10px 0 #1e3a8a;
-  position:relative;
-  overflow:hidden;
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
 }
 
-.titlebar{
-  background:#1e3a8a;
-  color:white;
-  padding:12px;
-  font-size:10px;
-  text-align:center;
+.screen{
+position:absolute;
+transition:all .6s ease;
+opacity:0;
+pointer-events:none;
+transform:scale(.95);
 }
 
-.content{
-  padding:20px;
-  text-align:center;
-  font-size:9px;
-  color:#1e3a8a;
-  height:calc(100% - 40px);
-  position:relative;
+.screen.active{
+opacity:1;
+pointer-events:auto;
+transform:scale(1);
+}
+
+.menu-box{
+background:rgba(0,0,0,.6);
+padding:40px;
+border-radius:20px;
+text-align:center;
+width:400px;
+box-shadow:0 0 25px rgba(255,255,255,.4);
+}
+
+.menu-box h1{
+font-size:18px;
+margin-bottom:30px;
 }
 
 .btn{
-  padding:12px;
-  border:3px solid #1e3a8a;
-  background:#93c5fd;
-  margin:10px;
-  cursor:pointer;
-  display:inline-block;
-  transition:.2s;
+margin:15px;
+padding:15px 20px;
+background:#ff2e63;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:12px;
+transition:.3s;
+font-size:10px;
 }
+
 .btn:hover{
-  background:#60a5fa;
-  transform:scale(1.05);
+background:#ff4e8a;
+transform:scale(1.05);
 }
 
-.hidden{display:none}
-
-.grid{
-  margin-top:20px;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:6px;
+.warning{
+font-size:10px;
+margin-top:20px;
+color:#ffe6ef;
 }
 
-.cell{
-  width:90px;
-  height:90px;
-  background:#e0f2fe;
-  border:3px solid #1e3a8a;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  transition:.15s;
+#gameBoard{
+display:grid;
+grid-template-columns:repeat(8,40px);
+gap:5px;
 }
 
-.cell.active{
-  background:#60a5fa;
-  transform:scale(1.05);
+.block{
+width:40px;
+height:40px;
+background:#fff;
+border-radius:8px;
+cursor:pointer;
+transition:.2s;
 }
 
-.scoreBox{
-  margin-top:15px;
+.block:hover{
+transform:scale(1.1);
 }
 
-.message{
-  margin-top:15px;
-  min-height:70px;
-  line-height:1.6;
+.score{
+position:absolute;
+top:20px;
+left:20px;
+font-size:12px;
 }
 
-.overlay{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,#1e3a8a,#9333ea);
-  color:white;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding:30px;
-  text-align:center;
-  opacity:0;
-  pointer-events:none;
-  transition:.8s;
+.notification{
+position:fixed;
+top:20px;
+right:20px;
+background:#fff;
+color:black;
+padding:15px;
+border-radius:15px;
+width:250px;
+transform:translateX(300px);
+opacity:0;
+transition:.5s;
+font-size:10px;
 }
 
-.overlay.show{
-  opacity:1;
-  pointer-events:auto;
+.notification.show{
+transform:translateX(0);
+opacity:1;
 }
 
-.overlay h1{
-  font-size:14px;
-  margin-bottom:20px;
+.combo{
+position:absolute;
+font-size:20px;
+color:#fff;
+animation:comboPop .8s ease;
 }
 
-.typewriter{
-  font-size:9px;
-  line-height:1.8;
-  max-width:420px;
-  min-height:100px;
+@keyframes comboPop{
+0%{transform:scale(.5);opacity:0}
+50%{transform:scale(1.3);opacity:1}
+100%{transform:scale(1);opacity:0}
+}
+
+.particle{
+position:absolute;
+width:8px;
+height:8px;
+background:white;
+border-radius:50%;
+animation:particle .8s linear forwards;
+}
+
+@keyframes particle{
+to{transform:translateY(-40px);opacity:0}
+}
+
+#ending{
+text-align:center;
+font-size:14px;
+animation:fadeIn 1.5s ease forwards;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:scale(.8)}
+to{opacity:1;transform:scale(1)}
 }
 </style>
 </head>
 
 <body>
 
-<div class="window">
-<div class="titlebar">BLUE VALENTINE BLOCK 💙</div>
-<div class="content">
-
-<!-- MENU -->
-<div id="menu">
-  <p>CHOOSE YOUR MODE</p>
-  <div class="btn" onclick="startGame()">ENTER HER WORLD 💙</div>
-  <div class="btn" onclick="showReality()">STAY IN REALITY</div>
+<div id="menu" class="screen active">
+<div class="menu-box">
+<h1>VALENTINE PIXEL QUEST</h1>
+<button class="btn" onclick="enterGame()">ENTER HER WORLD</button>
+<button class="btn" onclick="stay()">STAY IN REALITY</button>
+<div id="stayWarning" class="warning"></div>
+</div>
 </div>
 
-<!-- REALITY -->
-<div id="reality" class="hidden">
-  <p>⚠ REALITY MODE</p><br>
-  Tidak ada block. Tidak ada warna biru.<br><br>
-  Tapi tetap saja...<br>
-  kamu kepikiran dia 💙<br><br>
-  <div class="btn" onclick="goMenu()">BACK</div>
+<div id="game" class="screen">
+<div class="score">Score: <span id="score">0</span> / 180</div>
+<div id="gameBoard"></div>
 </div>
 
-<!-- GAME -->
-<div id="game" class="hidden">
-  <div class="scoreBox">SCORE: <span id="score">0</span> / 180</div>
-  <div class="grid" id="grid"></div>
-  <div class="message" id="message">
-    Raih 180 poin untuk membuka pesan spesial 💘
-  </div>
+<div id="ending" class="screen">
+<h1>HAPPY VALENTINE ❤️</h1>
+<p style="margin-top:30px;font-size:10px;">You reached 180 points for love.</p>
 </div>
 
-</div>
+<div id="notif" class="notification"></div>
 
-<!-- FINALE -->
-<div class="overlay" id="overlay">
-  <h1>💘 HAPPY VALENTINE 💘</h1>
-  <div class="typewriter" id="finalText"></div>
-  <div class="btn" onclick="restart()">BACK TO MENU</div>
-</div>
-
-</div>
+<audio id="notifSound">
+<source src="https://www.myinstants.com/media/sounds/iphone_notification.mp3">
+</audio>
 
 <script>
 let score=0;
-let activeIndex=null;
+let combo=0;
 
-const milestoneMessages={
-30:"30 poin... kamu mulai masuk ke dunianya 💙",
-60:"60 poin... rasanya makin nyaman ya?",
-90:"90 poin... hampir setengah perjalanan hati.",
-120:"120 poin... kamu nggak mau berhenti ya?",
-150:"150 poin... deg-degan sedikit.",
-180:"180 poin... kamu berhasil 💘"
-};
-
-function createGrid(){
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-  for(let i=0;i<25;i++){
-    const cell=document.createElement("div");
-    cell.className="cell";
-    cell.onclick=()=>clickCell(i);
-    grid.appendChild(cell);
-  }
+function switchScreen(from,to){
+document.getElementById(from).classList.remove("active");
+setTimeout(()=>document.getElementById(to).classList.add("active"),300);
 }
 
-function activateRandom(){
-  const cells=document.querySelectorAll(".cell");
-  cells.forEach(c=>c.classList.remove("active"));
-  activeIndex=Math.floor(Math.random()*cells.length);
-  cells[activeIndex].classList.add("active");
+function enterGame(){
+switchScreen("menu","game");
+generateBoard();
 }
 
-function clickCell(index){
-  if(index===activeIndex){
-    score+=10;
-    document.getElementById("score").innerText=score;
-    checkMilestone();
-    activateRandom();
-    if(score>=180){
-      endGame();
-    }
-  }
+function stay(){
+let warn=document.getElementById("stayWarning");
+warn.innerHTML="Reality is cold... Go back?";
+warn.innerHTML+="<br><button class='btn' onclick='backMenu()'>BACK</button>";
 }
 
-function checkMilestone(){
-  if(milestoneMessages[score]){
-    document.getElementById("message").innerText=milestoneMessages[score];
-  }
+function backMenu(){
+document.getElementById("stayWarning").innerHTML="";
 }
 
-function startGame(){
-  score=0;
-  document.getElementById("score").innerText=0;
-  document.getElementById("menu").classList.add("hidden");
-  document.getElementById("reality").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-  document.getElementById("message").innerText="Raih 180 poin untuk membuka pesan spesial 💘";
-  createGrid();
-  activateRandom();
+function generateBoard(){
+let board=document.getElementById("gameBoard");
+board.innerHTML="";
+for(let i=0;i<64;i++){
+let block=document.createElement("div");
+block.className="block";
+block.style.background=randomColor();
+block.onclick=(e)=>clickBlock(e,block);
+board.appendChild(block);
+}
 }
 
-function showReality(){
-  document.getElementById("menu").classList.add("hidden");
-  document.getElementById("reality").classList.remove("hidden");
+function randomColor(){
+const colors=["#ff2e63","#ff6f91","#ff9671","#ffc75f","#f9f871"];
+return colors[Math.floor(Math.random()*colors.length)];
 }
 
-function goMenu(){
-  document.getElementById("reality").classList.add("hidden");
-  document.getElementById("menu").classList.remove("hidden");
+function clickBlock(e,block){
+block.style.background=randomColor();
+score+=10;
+combo++;
+document.getElementById("score").innerText=score;
+
+createParticles(e.clientX,e.clientY);
+
+if(combo%3===0){
+showCombo();
 }
 
-function endGame(){
-  document.getElementById("overlay").classList.add("show");
-  typeWriter(
-`180 poin tercapai.
-
-Setiap klik tadi
-kayak setiap detik aku
-yang selalu milih kamu.
-
-Kamu itu biru yang paling tenang,
-dan stroberi yang paling manis.
-
-Happy Valentine 💙🍓`
-  );
+if(score===50||score===100||score===150){
+showNotif("You’re doing amazing ❤️");
 }
 
-function typeWriter(text){
-  const el=document.getElementById("finalText");
-  el.innerHTML="";
-  let i=0;
-  function typing(){
-    if(i<text.length){
-      el.innerHTML+=text.charAt(i);
-      i++;
-      setTimeout(typing,35);
-    }
-  }
-  typing();
+if(score>=180){
+setTimeout(()=>switchScreen("game","ending"),800);
+}
 }
 
-function restart(){
-  document.getElementById("overlay").classList.remove("show");
-  document.getElementById("game").classList.add("hidden");
-  document.getElementById("menu").classList.remove("hidden");
+function showCombo(){
+let c=document.createElement("div");
+c.className="combo";
+c.innerText="COMBO x"+combo;
+c.style.left="50%";
+c.style.top="40%";
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),800);
+}
+
+function createParticles(x,y){
+for(let i=0;i<8;i++){
+let p=document.createElement("div");
+p.className="particle";
+p.style.left=x+"px";
+p.style.top=y+"px";
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),800);
+}
+}
+
+function showNotif(text){
+let n=document.getElementById("notif");
+n.innerText=text;
+n.classList.add("show");
+document.getElementById("notifSound").play();
+setTimeout(()=>n.classList.remove("show"),3000);
 }
 </script>
 
