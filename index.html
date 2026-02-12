@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For You 💙🍓</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Poppins',sans-serif;
+  background:radial-gradient(circle at 30% 20%, #1e3a8a, #0f172a 70%);
+  overflow:hidden;
+  color:white;
+  transition:1.5s;
+}
+
+.bg-glow{
+  position:absolute;
+  width:500px;
+  height:500px;
+  background:radial-gradient(circle, rgba(59,130,246,.4), transparent 70%);
+  filter:blur(100px);
+  animation:float 8s ease-in-out infinite alternate;
+}
+
+@keyframes float{
+  from{transform:translateY(-30px)}
+  to{transform:translateY(30px)}
+}
+
+.card{
+  position:relative;
+  width:100%;
+  max-width:460px;
+  padding:32px;
+  border-radius:24px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(25px);
+  box-shadow:0 30px 60px rgba(0,0,0,0.4);
+  text-align:center;
+  transition:1s;
+}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:26px;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:20px;
+}
+
+.game-area{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-top:10px;
+}
+
+.bubble{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.bubble:hover{
+  transform:scale(1.15);
+  background:rgba(255,255,255,0.25);
+}
+
+.hidden{display:none}
+
+.final-text{
+  font-size:15px;
+  line-height:1.7;
+  margin-top:20px;
+  animation:fadeIn 2s ease forwards;
+  opacity:0;
+}
+
+@keyframes fadeIn{
+  to{opacity:1}
+}
+
+button{
+  margin-top:20px;
+  padding:8px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(90deg,#60a5fa,#38bdf8);
+  color:white;
+  font-weight:600;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="card">
+  <h1>Untuk Kamu 💙</h1>
+  <div class="subtitle">Ada satu stroberi tersembunyi. Temuin ya 🍓</div>
+
+  <div class="game-area" id="game">
+    <div class="bubble">💙</div>
+    <div class="bubble">💙</div>
+    <div class="bubble">💙</div>
+    <div class="bubble" id="correct">🍓</div>
+    <div class="bubble">💙</div>
+    <div class="bubble">💙</div>
+  </div>
+
+  <div id="final" class="hidden final-text">
+    Kamu nemuin stroberinya... 🍓<br><br>
+    Tau gak kenapa aku pilih warna biru buat semuanya?<br><br>
+    Karena biru itu tenang.<br>
+    Dan anehnya, setiap kali aku mikir tentang rasa tenang,<br>
+    yang muncul selalu kamu.<br><br>
+    Kalau dunia lagi ribet, aku cuma pengin jadi tempat paling aman buat kamu.<br><br>
+    Stay with me ya 💙
+  </div>
+</div>
+
+<script>
+const correct = document.getElementById('correct');
+const final = document.getElementById('final');
+const game = document.getElementById('game');
+
+correct.onclick = ()=>{
+  game.classList.add('hidden');
+  final.classList.remove('hidden');
+  document.body.style.background="radial-gradient(circle at 70% 30%, #60a5fa, #1e3a8a 70%)";
+};
+</script>
+
+</body>
+</html>
